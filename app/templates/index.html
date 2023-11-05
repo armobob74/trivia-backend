@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+{%block head %}
+<style>
+section {
+	border: solid 1px gray;
+	padding:1em;
+}
+
+#connection-status.connected {
+	color:green;
+	background-color: lightgreen;
+}
+#connection-status.connected:after {
+	content:'Connected';
+}
+
+</style>
+
+{% endblock %}
+{% block body %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+	    document.querySelector('#connection-status').classList.add('connected')
+    });
+</script>
+<header> 
+	<h1>Demos</h1>
+<span id="connection-status"></span> 
+</header>
+<section>
+  <h2>Session Cookie Demo</h2>
+  <form action="/" method="post">
+    <input type="text" placeholder="name" name="name" id="name" />
+    <button type="submit">Submit</button>
+  </form>
+  <p>Hello {{name}}</p>
+</section>
+<section id="join-game-demo">
+	<h2>Join Game Demo</h2>
+	<input type="text"></input>
+    <button type="button" onclick="joinGame()">Join Game</button>
+  <p class="response-container"></p>
+  <script>
+	  function joinGame(){
+		  let game_id = document.querySelector("#join-game-demo input").value
+		  console.log("joining game", game_id)
+		  let data = {
+			  'game-id':game_id
+		  }
+		  socket.emit('join-game', data=data)
+	  }
+	  socket.on('join-game', (msg)=>{
+		  document.querySelector("#join-game-demo .response-container").innerText = "Response: " + msg['text']
+	  })
+  </script>
+</section>
+<section id="end-game-demo">
+	<h2>End Game Demo</h2>
+	<input type="text"></input>
+    <button type="button" onclick="endGame()">End Game</button>
+  <p class="response-container"></p>
+  <script>
+	  function endGame(){
+		  let game_id = document.querySelector("#end-game-demo input").value
+		  console.log("ending game", game_id)
+		  let data = {
+			  'game-id':game_id
+		  }
+		  socket.emit('end-game', data=data)
+	  }
+	  socket.on('end-game', (msg)=>{
+		  document.querySelector("#end-game-demo .response-container").innerText = "Response: " + msg['text']
+	  })
+  </script>
+</section>
+{% endblock %}
