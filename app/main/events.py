@@ -2,7 +2,6 @@ from flask import session
 from flask_socketio import emit, join_room, leave_room, close_room
 from .. import socketio
 
-
 @socketio.on('join-game', namespace='/')
 def joinGame(message):
     """
