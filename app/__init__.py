@@ -11,7 +11,8 @@ def create_app(debug=False, test_mode=False):
     app.debug = debug
     app.config['SECRET_KEY'] = 'rijgsiejfies'
     FRONTEND_URL = 'http://localhost:5173'
-    app.config['CORS_ALLOWED_ORIGINS'] = [FRONTEND_URL]
+    BACKEND_URL = 'http://localhost:5000'
+    app.config['CORS_ALLOWED_ORIGINS'] = [FRONTEND_URL, BACKEND_URL]
     if test_mode:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     else:
