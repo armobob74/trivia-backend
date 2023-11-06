@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_socketio import SocketIO
 from .models import db
+from flask_cors import CORS
 
 socketio = SocketIO()
 
@@ -9,6 +10,7 @@ def create_app(debug=False, test_mode=False):
     app = Flask(__name__)
     app.debug = debug
     app.config['SECRET_KEY'] = 'rijgsiejfies'
+    app.config['FRONTEND_URL'] = 'http://localhost:5173'
     if test_mode:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     else:
@@ -23,4 +25,5 @@ def create_app(debug=False, test_mode=False):
     with app.app_context():
         db.create_all()
 
+    CORS(app, supports_credentials=True,origins=[app.config['FRONTEND_URL']])
     return app
