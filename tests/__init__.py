@@ -3,8 +3,7 @@ from app import create_app, socketio
 
 @pytest.fixture
 def flask_app():
-    app = create_app()
-    # update with test config later if needed
+    app = create_app(test_mode=True)
     return app
 
 @pytest.fixture
