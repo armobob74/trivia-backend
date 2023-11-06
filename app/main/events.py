@@ -1,7 +1,7 @@
 import pdb
 from flask import session
 from flask_socketio import emit, join_room, leave_room, close_room
-from ..models import db, Manager 
+from ..models import Game, db, Manager 
 from .. import socketio
 
 @socketio.on('join-game', namespace='/')
@@ -29,3 +29,10 @@ def createManager(message):
     db.session.add(manager)
     db.session.commit()
     emit('create-manager', {'manager-id':manager.id})
+
+@socketio.on('create-game', namespace='/')
+def createGame(message):
+    db.session.add(
+            Game(id=message['game-id'], manager_id=message['manager-id'])
+    )
+    db.session.commit()
