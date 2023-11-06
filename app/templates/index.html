@@ -75,28 +75,4 @@ section {
 	  })
   </script>
 </section>
-<section id="create-item-demo">
-	<h2>Create Item Demo</h2>
-	<input type="text" value="cheese"></input>
-    <button type="button" onclick="createItem()">Create Item</button>
-
-  <p class="response-container"></p>
-  <script>
-	  let this_section = document.querySelector("#create-item-demo")
-	  function createItem(){
-		  let word = this_section.querySelector("input").value
-		  console.log("Creating item ", word)
-		  let data = {'demo-model':{'word':word}}
-		  socket.emit('create-item-demo', data=data)
-	  }
-	  socket.on('create-item-demo', (msg)=>{
-		  this_section.querySelector(".response-container").innerHTML = "Response: " + msg['text'] + '\n';
-		  let items = msg['items']
-		  let item_html = msg['items'].map((item)=>{
-			  return `<div>${item['id']} ${item['word']}</div>`
-		  }).join('')
-		  this_section.querySelector(".response-container").innerHTML += item_html;
-	  })
-  </script>
-</section>
 {% endblock %}

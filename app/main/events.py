@@ -1,7 +1,7 @@
 import pdb
 from flask import session
 from flask_socketio import emit, join_room, leave_room, close_room
-from ..models import db, DemoModel
+from ..models import db, Manager 
 from .. import socketio
 
 @socketio.on('join-game', namespace='/')
@@ -23,20 +23,9 @@ def endGame(message):
     emit('end-game', {'text': f'Closing room {room}'}, room=room)
     close_room(room)
 
-@socketio.on('create-item-demo', namespace='/')
-def endGame(message):
-    """
-    create an object in the database for test purposes
-    """
-    demo = DemoModel(word = message['demo-model']['word'])
-    db.session.add(demo)
+@socketio.on('create-manager', namespace='/')
+def createManager(message):
+    manager = Manager()
+    db.session.add(manager)
     db.session.commit()
-    all_models = DemoModel.query.all()
-    # now make items json-serializable
-    items = []
-    for model in all_models:
-        d = model.__dict__
-        keys = [key for key in d.keys() if not key.startswith('_')]
-        item = {key:d[key] for key in keys}
-        items.append(item)
-    emit('create-item-demo', {'text': f'item added to db','items':items})
+    emit('create-manager', {'manager-id':manager.id})

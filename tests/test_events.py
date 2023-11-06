@@ -1,5 +1,7 @@
 from . import socketio_client, flask_app
+from app.models import Manager, db
 import random
+import pdb
 
 def test_join_game(socketio_client):
     """
@@ -24,23 +26,19 @@ def test_end_game(socketio_client):
     end_game_event = next(event for event in received if event['name'] == 'end-game')
     assert end_game_event['args'][0]['text'] == f'Closing room {game_id}'
 
-def test_create_item_demo(socketio_client, flask_app):
-    """
-    test item creation
-    """
+def test_create_manager(socketio_client):
+    with socketio_client.app.app_context():
+        manager_ids_before_event = [tup[0] for tup in db.session.query(Manager.id).all()]
+    socketio_client.emit('create-manager', {})
+    received = socketio_client.get_received('/')
 
-    #choose a random word that will pretty much definitely not exist in the db table
-    choices = 'abcdefghijklmnopqrstuvwxyz' +  'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '01234567890'
-    word = ''.join([random.choice(choices) for _ in range(64)]) 
-    socketio_client.emit('create-item-demo',{'demo-model':{'word':word}} )
+    assert len(received) > 0
+    assert received[0]['name'] == 'create-manager'
+    assert 'manager-id' in received[0]['args'][0]
 
-    recieved = socketio_client.get_received('/')
-    assert len(recieved) > 0
-
-    text = recieved[0]['args'][0]['text']
-    assert len(text) > 0 # we don't really care about the text tbh
-
-    items = recieved[0]['args'][0]['items']
-    just_created_item = [item for item in items if item['word'] == word][0]
-    all_ids = [item['id'] for item in items]
-    assert just_created_item['id'] == max(all_ids)
+    with socketio_client.app.app_context():
+        manager_id = received[0]['args'][0]['manager-id']
+        manager = db.session.get(Manager,manager_id)
+        assert manager is not None
+        assert manager_id not in manager_ids_before_event
+        

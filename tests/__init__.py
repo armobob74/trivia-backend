@@ -10,4 +10,3 @@ def flask_app():
 def socketio_client(flask_app):
     # Use the test_client provided by Flask-SocketIO
     return socketio.test_client(flask_app, namespace='/')
-
