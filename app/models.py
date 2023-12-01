@@ -9,3 +9,11 @@ class Manager(db.Model):
 class Game(db.Model):
     id = db.Column(db.String(4), primary_key=True)
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'), nullable=False)
+    players = db.relationship('Player', backref='game', lazy=True)  # One-to-many relationship with Player
+
+class Player(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    game_id = db.Column(db.String(4), db.ForeignKey('game.id'), nullable=False)  # Foreign key to Game
+    game = db.relationship('Game', backref=db.backref('players', lazy=True))  # Relationship to Game
+
