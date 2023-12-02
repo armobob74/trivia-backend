@@ -25,11 +25,11 @@ def endGame(message):
     close_room(room)
 
 @socketio.on('create-manager', namespace='/')
-def createManager(message):
+def createManager():
     manager = Manager()
     db.session.add(manager)
     db.session.commit()
-    emit('create-manager', {'manager-id':manager.id})
+    emit('create-manager-response', {'manager-id':manager.id})
 
 @socketio.on('create-game', namespace='/')
 def createGame(message):
@@ -37,6 +37,7 @@ def createGame(message):
             Game(id=message['game-id'], manager_id=message['manager-id'])
     )
     db.session.commit()
+    emit('create-game-response')
 
 @socketio.on('create-player',namespace='/')
 def createPlayer(message):
