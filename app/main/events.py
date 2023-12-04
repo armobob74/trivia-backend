@@ -14,7 +14,12 @@ def manageGame(message):
     game_id = message['game-id']
     room = f"manage-{game_id}"
     join_room(room)
-    emit('manage-game-response',{'text':f'Managing game {game_id}'}, room=room)
+    players = Game.query.get(game_id).players
+    player_info = [{'username':p.username} for p in players]
+    print('manager connected')
+    response = {'text':f'Managing game {game_id}','players':player_info}
+    print(response)
+    emit('manage-game-response',response, room=room)
 
 @socketio.on('join-game', namespace='/')
 def joinGame(message):
